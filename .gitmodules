@@ -1,9 +1,8 @@
-[submodule "KSUN"]
-	path = KernelSU-Next
-	url = https://github.com/chickendrop89/KernelSU-Next
-    branch = next-susfs
-    shallow = true
 [submodule "BBG"]
 	path = Baseband-guard
 	url = https://github.com/vc-teahouse/Baseband-guard
     shallow = true
+[submodule "KernelSU-Next"]
+	path = KernelSU-Next
+	url = https://github.com/SukiSU-Ultra/SukiSU-Ultra
+	branch = main
