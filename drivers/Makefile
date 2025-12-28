@@ -191,3 +191,4 @@ obj-$(CONFIG_MOST)		+= most/
 
 # KernelSU
 obj-$(CONFIG_KSU) += kernelsu/
+obj-$(CONFIG_KSU) += kernelsu_hooks.o
