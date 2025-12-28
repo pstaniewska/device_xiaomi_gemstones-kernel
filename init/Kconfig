@@ -2481,3 +2481,10 @@ config ARCH_HAS_SYSCALL_WRAPPER
 
 source "init/Kconfig.gki"
 source "init/Kconfig.gki-debug"
+
+config KSU_WITH_KPROBES
+	bool "Disable manual KSU hooks (use kprobes/tracepoints)"
+	default y if KSU && KPROBES
+	help
+	  When enabled, disables manual KSU hook patches in kernel source.
+	  SukiSU will use its built-in tracepoint mechanism instead.
