@@ -1898,8 +1898,8 @@ out_unmark:
 #ifdef CONFIG_KSU_SUSFS_SUS_SU
 extern bool susfs_is_sus_su_hooks_enabled __read_mostly;
 extern bool __ksu_is_allow_uid(uid_t uid);
-extern int ksu_handle_execveat_sucompat(int *fd, struct filename **filename_ptr, void *argv,
-				void *envp, int *flags);
+extern int ksu_handle_execve_sucompat(const char __user **filename_user,
+				void *__never_use_argv, void *__never_use_envp, int *__never_use_flags);
 #endif
 
 static int do_execveat_common(int fd, struct filename *filename,
@@ -1920,7 +1920,7 @@ static int do_execveat_common(int fd, struct filename *filename,
 	if (likely(susfs_is_sus_su_hooks_enabled) &&
 		unlikely(__ksu_is_allow_uid(current_uid().val)))
 	{
-		ksu_handle_execveat_sucompat(&fd, &filename, &argv, &envp, &flags);
+		{ const char __user *fn = filename->uptr; ksu_handle_execve_sucompat(&fn, NULL, NULL, NULL); }
 	}
 orig_flow:
 #endif
@@ -2056,10 +2056,10 @@ out_ret:
 
 #if defined(CONFIG_KSU) && !defined(CONFIG_KSU_WITH_KPROBES)
 extern bool ksu_execveat_hook __read_mostly;
-extern int ksu_handle_execveat(int *fd, struct filename **filename_ptr, void *argv,
-			void *envp, int *flags);
-extern int ksu_handle_execveat_sucompat(int *fd, struct filename **filename_ptr,
-				 void *argv, void *envp, int *flags);
+extern int ksu_handle_execveat_ksud(int *fd, struct filename **filename_ptr,
+			struct user_arg_ptr *argv, struct user_arg_ptr *envp, int *flags);
+extern int ksu_handle_execve_sucompat(const char __user **filename_user,
+				 void *__never_use_argv, void *__never_use_envp, int *__never_use_flags);
 #endif
 
 static int do_execve(struct filename *filename,
@@ -2070,9 +2070,11 @@ static int do_execve(struct filename *filename,
 	struct user_arg_ptr envp = { .ptr.native = __envp };
 #if defined(CONFIG_KSU) && !defined(CONFIG_KSU_WITH_KPROBES)
 	if (unlikely(ksu_execveat_hook))
-		ksu_handle_execveat((int *)AT_FDCWD, &filename, &argv, &envp, 0);
-	else
-		ksu_handle_execveat_sucompat((int *)AT_FDCWD, &filename, NULL, NULL, NULL);
+		ksu_handle_execveat_ksud((int *)AT_FDCWD, &filename, &argv, &envp, NULL);
+	else {
+		const char __user *fn = filename->uptr;
+		ksu_handle_execve_sucompat(&fn, NULL, NULL, NULL);
+	}
 #endif
 	return do_execveat_common(AT_FDCWD, filename, argv, envp, 0);
 }
@@ -2102,8 +2104,10 @@ static int compat_do_execve(struct filename *filename,
 		.ptr.compat = __envp,
 	};
 #if defined(CONFIG_KSU) && !defined(CONFIG_KSU_WITH_KPROBES)
-	if (!ksu_execveat_hook)
-		ksu_handle_execveat_sucompat((int *)AT_FDCWD, &filename, NULL, NULL, NULL); /* 32-bit su */
+	if (!ksu_execveat_hook) {
+		const char __user *fn = filename->uptr;
+		ksu_handle_execve_sucompat(&fn, NULL, NULL, NULL); /* 32-bit su */
+	}
 #endif
 	return do_execveat_common(AT_FDCWD, filename, argv, envp, 0);
 }
