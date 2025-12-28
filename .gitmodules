@@ -4,5 +4,5 @@
     shallow = true
 [submodule "KernelSU-Next"]
 	path = KernelSU-Next
-	url = https://github.com/SukiSU-Ultra/SukiSU-Ultra
+	url = https://github.com/pstaniewska/SukiSU-Ultra.git
 	branch = main
