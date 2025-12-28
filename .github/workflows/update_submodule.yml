@@ -1,0 +1,31 @@
+name: Update Submodule
+
+on:
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: stable-7
+          submodules: false
+          
+      - name: Update submodule
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          
+          # Remove old submodule
+          git rm -rf KernelSU-Next || true
+          rm -rf .git/modules/KernelSU-Next || true
+          
+          # Clone new repo
+          git clone --depth 1 https://github.com/pstaniewska/SukiSU-Ultra.git KernelSU-Next
+          rm -rf KernelSU-Next/.git
+          
+          # Add as regular directory
+          git add KernelSU-Next
+          git commit -m "Replace KernelSU-Next submodule with SukiSU-Ultra files"
+          git push
