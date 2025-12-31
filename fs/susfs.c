@@ -19,6 +19,13 @@
 
 extern bool susfs_is_current_ksu_domain(void);
 
+#ifdef CONFIG_KSU_SUSFS_SUS_SU
+bool susfs_is_sus_su_hooks_enabled __read_mostly = true;
+bool ksu_devpts_hook __read_mostly = true;
+EXPORT_SYMBOL(susfs_is_sus_su_hooks_enabled);
+EXPORT_SYMBOL(ksu_devpts_hook);
+#endif
+
 #ifdef CONFIG_KSU_SUSFS_ENABLE_LOG
 bool susfs_is_log_enabled __read_mostly = true;
 #define SUSFS_LOGI(fmt, ...) if (susfs_is_log_enabled) pr_info("susfs:[%u][%d][%s] " fmt, current_uid().val, current->pid, __func__, ##__VA_ARGS__)
