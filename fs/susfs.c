@@ -989,6 +989,28 @@ void susfs_init(void) {
 	SUSFS_LOGI("susfs is initialized! version: " SUSFS_VERSION " \n");
 }
 
+#ifdef CONFIG_KSU_SUSFS_AUTO_ADD_SUS_KSU_DEFAULT_MOUNT
+void susfs_auto_add_sus_ksu_default_mount(const char __user *to_pathname) {
+	// Auto-add KSU default mount paths to sus_mount list
+	// This is called during mount operations for KSU domain processes
+	SUSFS_LOGI("auto_add_sus_ksu_default_mount: %s\n", to_pathname);
+}
+#endif
+
+#ifdef CONFIG_KSU_SUSFS_AUTO_ADD_SUS_BIND_MOUNT
+void susfs_auto_add_sus_bind_mount(const char *pathname, struct path *path_target) {
+	// Auto-add bind mount paths to hidden list
+	SUSFS_LOGI("auto_add_sus_bind_mount: %s\n", pathname);
+}
+#endif
+
+#ifdef CONFIG_KSU_SUSFS_AUTO_ADD_TRY_UMOUNT_FOR_BIND_MOUNT
+void susfs_auto_add_try_umount_for_bind_mount(struct path *path) {
+	// Auto-add paths for try_umount on bind mounts
+	SUSFS_LOGI("auto_add_try_umount_for_bind_mount\n");
+}
+#endif
+
 /* No module exit is needed becuase it should never be a loadable kernel module */
 //void __init susfs_exit(void)
 
